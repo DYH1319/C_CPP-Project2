@@ -242,22 +242,22 @@ string divide(string num1, string num2) {
         num2.erase(remove(num2.begin(), num2.end(), '.'), num2.end());
     }
 
-    int firstTimes = 0;
+    string firstTimes = "0";
     while (compareValue(num1, num2) >= 0) {
         num1 = subtract(num1, num2);
-        firstTimes++;
+        firstTimes = add(firstTimes, "1");
     }
-    string ans = to_string(firstTimes);
+    string ans = (firstTimes);
     ans.append(".");
 
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < 30; i++) {
         num1.append("0");
-        int times = 0;
+        string times = "0";
         while (compareValue(num1, num2) >= 0) {
             num1 = subtract(num1, num2);
-            times++;
+            times = add(times, "1");
         }
-        ans.append(to_string(times));
+        ans.append(times);
     }
 
     if (countNum1Digits > countNum2Digits) {
