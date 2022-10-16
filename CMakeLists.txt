@@ -4,5 +4,3 @@ project(project2)
 set(CMAKE_CXX_STANDARD 11)
 
 add_executable(project2 main.cpp calculate.cpp calculate.hpp preTreat.cpp preTreat.hpp)
-
-add_executable(test1 Calculator.cpp)

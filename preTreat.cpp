@@ -1,7 +1,17 @@
+#include <iostream>
 #include "preTreat.hpp"
 #include "calculate.hpp"
 
 Calculate::Calculate() = default;
+
+void Calculate::trimSpace() {
+    int index = 0;
+    if (!input.empty()) {
+        while ((index = (int) input.find(' ', index)) != string::npos) {
+            input.erase(index, 1);
+        }
+    }
+}
 
 int Calculate::getSymbol_lv(char symbol) {
     if (symbol == ' ' || symbol == '.') {
@@ -20,6 +30,42 @@ int Calculate::getSymbol_lv(char symbol) {
         return SYMBOL_LV::LV7;
     } else {
         return SYMBOL_LV::LV0;
+    }
+}
+
+bool Calculate::checkIsAssignmentExpression() {
+    int index = 0;
+    if (!input.empty()) {
+        if ((index = (int) input.find('=', index)) != string::npos && index != 0 && index != input.size()) {
+            string var = input.substr(0, index);
+            string value = input.substr(index + 1);
+            for (char c: value) {
+                if ((c < '0' || c > '9') && c != '.') {
+                    cout << "The value " << value << " is not a number, please check it." << endl;
+                    getline(cin, input);
+                    checkIsAssignmentExpression();
+                }
+            }
+            for (char c: var) {
+                if (getSymbol_lv(c) > 0) {
+                    cout << "The name " << var
+                         << " of the variable is not allowed, please change you variable name, don't use number or operational symbol."
+                         << endl;
+                    getline(cin, input);
+                    checkIsAssignmentExpression();
+                }
+            }
+            customVar[var] = value;
+            return true;
+        }
+    }
+    return false;
+}
+
+void Calculate::convertVariablesToNumber() {
+    map<string, string>::iterator iter;
+    for (iter = customVar.begin(); iter != customVar.end(); iter++) {
+        input.replace(input.find(iter->first), iter->first.size(), iter->second);
     }
 }
 
@@ -56,7 +102,8 @@ bool Calculate::checkValidity() const {
         }
         if (c == '(' || c == '[' || c == '{') {
             if ((brackets.empty() || getSymbol_lv(c) > getSymbol_lv(brackets.top()))
-                && (i == 0 || getSymbol_lv(input.at(i - 1)) == 1 || getSymbol_lv(input.at(i - 1)) == 3 || getSymbol_lv(input.at(i - 1)) == 4)) {
+                && (i == 0 || getSymbol_lv(input.at(i - 1)) == 1 || getSymbol_lv(input.at(i - 1)) == 3 ||
+                    getSymbol_lv(input.at(i - 1)) == 4)) {
                 brackets.push(c);
                 continue;
             } else {
@@ -65,7 +112,8 @@ bool Calculate::checkValidity() const {
         }
         if (c == ')' || c == ']' || c == '}') {
             if (!brackets.empty() && getSymbol_lv(c) == getSymbol_lv(brackets.top()) && getSymbol_lv(input.at(i - 1)) <= 2
-                && (i + 1 == input.size() || getSymbol_lv(input.at(i + 1)) == 1) || getSymbol_lv(input.at(i + 1)) == 3 || getSymbol_lv(input.at(i + 1)) == 4) {
+                && (i + 1 == input.size() || getSymbol_lv(input.at(i + 1)) == 1) || getSymbol_lv(input.at(i + 1)) == 3 ||
+                getSymbol_lv(input.at(i + 1)) == 4) {
                 brackets.pop();
                 continue;
             } else {
@@ -111,7 +159,8 @@ void Calculate::convertToStandardFormat() {
             if (symbolStack.empty() || symbolStack.top() == '(' || symbolStack.top() == '[' || symbolStack.top() == '{') {
                 symbolStack.push(c);
             } else {
-                while (!symbolStack.empty() && getSymbol_lv(c) <= getSymbol_lv(symbolStack.top()) && getSymbol_lv(symbolStack.top()) <= 4) {
+                while (!symbolStack.empty() && getSymbol_lv(c) <= getSymbol_lv(symbolStack.top()) &&
+                       getSymbol_lv(symbolStack.top()) <= 4) {
                     temp += symbolStack.top();
                     stdFormat.push_back(temp);
                     symbolStack.pop();
@@ -147,7 +196,7 @@ void Calculate::convertToStandardFormat() {
 }
 
 string Calculate::calculate() {
-    for (string s : stdFormat) {
+    for (string s: stdFormat) {
         char c = s.at(0);
         if (getSymbol_lv(c) == 2) {
             computeStack.push(s);

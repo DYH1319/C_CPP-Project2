@@ -1,3 +1,4 @@
+#include <valarray>
 #include "iostream"
 #include "calculate.hpp"
 #include "preTreat.hpp"
@@ -15,8 +16,20 @@ int main() {
         getline(cin, calculate.input);
 
         if (calculate.input == "\\q") {
-            exit(0);
+            return 0;
         }
+
+        calculate.trimSpace();
+
+        while (true) {
+            if (calculate.checkIsAssignmentExpression()) {
+                getline(cin, calculate.input);
+            } else {
+                break;
+            }
+        }
+
+        calculate.convertVariablesToNumber();
 
         if (!calculate.checkValidity()) {
             cout << "You input is illegal, please check it." << endl;
@@ -25,7 +38,9 @@ int main() {
 
         calculate.standardise();
         calculate.convertToStandardFormat();
+
         cout << calculate.calculate() << endl;
+
         calculate.stdFormat.clear();
         calculate.computeStack.pop();
     }

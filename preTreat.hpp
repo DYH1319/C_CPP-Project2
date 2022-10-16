@@ -1,4 +1,5 @@
 #include <string>
+#include <map>
 #include "stack"
 #include "vector"
 
@@ -20,9 +21,13 @@ struct Calculate {
     stack<char> symbolStack;
     stack<string> computeStack;
     vector<string> stdFormat;
+    map<string, string> customVar;
 
     Calculate();
+    void trimSpace();
     static int getSymbol_lv(char symbol);
+    bool checkIsAssignmentExpression();
+    void convertVariablesToNumber();
     bool checkValidity() const;
     void standardise();
     void convertToStandardFormat();
