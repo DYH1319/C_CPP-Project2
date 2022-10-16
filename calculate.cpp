@@ -250,7 +250,7 @@ string divide(string num1, string num2) {
     string ans = to_string(firstTimes);
     ans.append(".");
 
-    for (int i = 0; i < 101; i++) {
+    for (int i = 0; i < 100; i++) {
         num1.append("0");
         int times = 0;
         while (compareValue(num1, num2) >= 0) {
